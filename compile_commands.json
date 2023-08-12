@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "/home/fernando/Documents/Programming/C/moretorture/build",
+    "command": "c++ -Imoretorture.p -I. -I.. -I/usr/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wextra -Wpedantic -std=c++14 -O0 -g -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -MD -MQ moretorture.p/main.cpp.o -MF moretorture.p/main.cpp.o.d -o moretorture.p/main.cpp.o -c ../main.cpp",
+    "file": "../main.cpp",
+    "output": "moretorture.p/main.cpp.o"
+  }
+]
