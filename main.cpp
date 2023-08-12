@@ -6,7 +6,7 @@
 #include <curses.h>
 #include <chrono>
 
-const size_t BOARD_X = 60;
+const size_t BOARD_X = 40;
 const size_t BOARD_Y = 10;
 const char *BORDER_CHAR = "#";
 
@@ -95,7 +95,7 @@ size_t game(ProgMode mode) {
         }
 
         if (enemy_spawn_duration.count() >= gen_random_float(0.8, 2)) {
-            Coordinate newEnemy = {BOARD_X - 2 + gen_random_int(0, 2), BOARD_Y - 2};
+            Coordinate newEnemy = {BOARD_X - 2 + gen_random_int(0, 3), BOARD_Y - 2};
             enemies.push_back(newEnemy);
             enemy_spawn_s = current_time;
         }
@@ -107,11 +107,9 @@ size_t game(ProgMode mode) {
                 else if (x == player.x && y == player.y)
                     mvprintw(y, x, "%s\n", "*");
                 else {
-                    bool enemyPrinted = false;
                     for (const auto &enemy : enemies) {
                         if (x == enemy.x && y == enemy.y) {
                             mvprintw(y, x, "%s\n", "W");
-                            enemyPrinted = true;
                             break;
                         }
                         if (player.x == enemy.x && player.y == enemy.y) {
@@ -119,8 +117,6 @@ size_t game(ProgMode mode) {
                             break;
                         }
                     }
-                    if (!enemyPrinted)
-                        mvprintw(y, x, " ");
                 }
             }
         }
@@ -149,12 +145,13 @@ void menu(ProgMode mode) {
     while (mode == Menu) {
         mvprintw(BOARD_Y/2-3, (BOARD_X-strlen("HIGH SCORE : "))/2, "HIGH SCORE : %lu", high_score);
         mvprintw(BOARD_Y/2-2, (BOARD_X-strlen("THE GAME OF ALL TIME"))/2, "THE GAME OF ALL TIME");
-        mvprintw(BOARD_Y/2-1, (BOARD_X-strlen("(q) quit"))/2, "(q) quit");
-        mvprintw(BOARD_Y/2, (BOARD_X-strlen("(p) play"))/2, "(p) play");
+        mvprintw(BOARD_Y/2, (BOARD_X-strlen("(q) quit"))/2, "(q) quit");
+        mvprintw(BOARD_Y/2-1, (BOARD_X-strlen("(p) play"))/2, "(p) play");
         refresh();
         ch = getch();
 
         if (ch == 'q') {
+            close_curses_screen();
             exit(0);
         } else if (ch == 'p') {
             mode = Game;
