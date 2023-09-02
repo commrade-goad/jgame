@@ -6,9 +6,11 @@
 #include <curses.h>
 #include <chrono>
 
-const size_t BOARD_X = 40;
+const size_t BOARD_X = 90;
 const size_t BOARD_Y = 10;
-const char *BORDER_CHAR = "#";
+const char BORDER_CHAR = '#';
+const char ENEMY_CHAR = 'X';
+const char PLAYER_CHAR = '*';
 
 enum ProgMode {
     Game,
@@ -66,7 +68,7 @@ size_t game(ProgMode mode) {
 
     auto jump_start = std::chrono::high_resolution_clock::now();
     auto jump_cooldown_start = std::chrono::high_resolution_clock::now();
-    auto enemy_speed_s = std::chrono::high_resolution_clock::now();
+    auto enemy_movement_speed_s = std::chrono::high_resolution_clock::now();
     auto enemy_spawn_s = std::chrono::high_resolution_clock::now();
 
     timeout(0);
@@ -74,7 +76,7 @@ size_t game(ProgMode mode) {
         auto current_time = std::chrono::high_resolution_clock::now();
         auto jump_duration = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - jump_start);
         auto jump_cooldown = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - jump_cooldown_start);
-        auto enemy_speed = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - enemy_speed_s);
+        auto enemy_movement_speed = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - enemy_movement_speed_s);
         auto enemy_spawn_duration = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - enemy_spawn_s);
 
         if (player.mode == Jump && jump_duration.count() >= 0.5) {
@@ -82,7 +84,7 @@ size_t game(ProgMode mode) {
             player.mode = Walk;
         }
 
-        if (enemy_speed.count() >= 0.1) {
+        if (enemy_movement_speed.count() >= 0.1) {
             for (auto &enemy : enemies) {
                 if (enemy.x > 0) {
                     enemy.x -= 1;
@@ -91,7 +93,7 @@ size_t game(ProgMode mode) {
                     ++score;
                 }
             }
-            enemy_speed_s = current_time;
+            enemy_movement_speed_s = current_time;
         }
 
         if (enemy_spawn_duration.count() >= gen_random_float(0.8, 2)) {
@@ -103,13 +105,13 @@ size_t game(ProgMode mode) {
         for (size_t y = 0; y < BOARD_Y; y++) {
             for (size_t x = 0; x < BOARD_X; x++) {
                 if (y == 0 || y == BOARD_Y - 1 || x == 0 || x == BOARD_X - 1)
-                    mvprintw(y, x, "%s\n", BORDER_CHAR);
+                    mvprintw(y, x, "%c\n", BORDER_CHAR);
                 else if (x == player.x && y == player.y)
-                    mvprintw(y, x, "%s\n", "*");
+                    mvprintw(y, x, "%c\n", PLAYER_CHAR);
                 else {
-                    for (const auto &enemy : enemies) {
+                    for (const Coordinate &enemy : enemies) {
                         if (x == enemy.x && y == enemy.y) {
-                            mvprintw(y, x, "%s\n", "W");
+                            mvprintw(y, x, "%c\n", ENEMY_CHAR);
                             break;
                         }
                         if (player.x == enemy.x && player.y == enemy.y) {
