@@ -10,3 +10,8 @@ meson setup build
 ```bash
 ninja -C build
 ```
+
+## CONTROL
+- GAME
+`e` to jump
+`q` to quit
